@@ -9,6 +9,9 @@
     "magic-log": "git://github.com/express-magic/magic-log",
     "magic-utils": "git://github.com/express-magic/magic-utils"
   },
+  "bin": {
+    "cache": "./cache.js"
+  },
   "repository": {
     "type": "git",
     "url": "http://github.com/express-magic/magic-cache.git"
