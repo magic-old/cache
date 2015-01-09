@@ -13,12 +13,12 @@ var async         = require('async')
 function getYearlyArchive(host, cb) {
   getArchives(host.dir, function (err, years) {
     if ( err ) { return cb(err); }
-    log('years', years);
+    //~ log('years', years);
     async.map(
       years
     , getMonthlyArchive
     , function (err, yearlyArchives) {
-        log('yearlyArchives', yearlyArchives);
+        //~ log('yearlyArchives', yearlyArchives);
         host.years = yearlyArchives;
         cb(err, host);
       }
@@ -29,12 +29,12 @@ function getYearlyArchive(host, cb) {
 function getMonthlyArchive(year, cb) {
   getArchives(year.dir, function (err, months) {
     if ( err ) { return cb(err); }
-    log('months', months);
+    //~ log('months', months);
     async.map(
       months
     , getBlogPosts
     , function (err, monthlyArchives) {
-        log('monthlyArchives', monthlyArchives);
+        //~ log('monthlyArchives', monthlyArchives);
         year.months = monthlyArchives;
         cb(err, year);
       }
@@ -58,7 +58,7 @@ function getBlogPosts(month, cb) {
 
 
 function getBlogData(hosts, cb) {
-  log('magic-cache', 'getBlogData called with hosts', hosts);
+  //~ log('magic-cache', 'getBlogData called with hosts', hosts);
   async.map(hosts, function (host, eachCb) {
     getYearlyArchive(host, eachCb)
   }
@@ -79,7 +79,7 @@ function init() {
     });
     saveBlogIndex(hostsAsObject, function (err) {
       if ( err ) { throw err; }
-      log('saving hosts done, all set');
+      log('saving hosts done, blogdata set');
     });
   });
 }
