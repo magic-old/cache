@@ -4,9 +4,9 @@
   "private": true,
   "main": "cache.js",
   "dependencies": {
-    "async": "^0.9.0",
-    "magic-log": "git://github.com/express-magic/magic-log",
-    "magic-utils": "git://github.com/express-magic/magic-utils"
+    "async": "file:../../node_modules/async",
+    "magic-log": "file:../magic-log",
+    "magic-utils": "file:../magic-utils"
   },
   "repository": {
     "type": "git",
