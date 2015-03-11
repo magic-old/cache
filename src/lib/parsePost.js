@@ -17,11 +17,13 @@ function cleanString(string, splitter) {
                .trim();
 }
 
-module.exports = function parsePost(file, cb) {
-  //~ log('parsePost called for file', file);
+function parsePost(file, cb) {
   fs.readFile(file, function (err, content) {
     var lines = content.toString().split('\n')
-      , post = {}
+      , filenameArray = file.split('/')
+      , post = {
+        filename: filenameArray[filenameArray.length - 1]
+      }
     ;
     utils.each(lines, function (line, key) {
       if ( line.indexOf('- var') >= 0 && line.indexOf('=') >= 0 ) {
@@ -71,8 +73,10 @@ module.exports = function parsePost(file, cb) {
     if ( post.title && ! post.slug ) {
       post.slug = utils.slugify(post.title);
     }
-    post.content = content.toString();
+    //~ post.content = content.toString();
     //~ console.log('magic-cache', 'lib/parsePost', 'returning post', post);
     cb(null, post);
   });
 }
+
+module.exports = parsePost;
