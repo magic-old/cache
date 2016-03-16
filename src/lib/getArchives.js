@@ -1,27 +1,33 @@
-'use strict';
+import fsutils from 'magic-fs';
+import async from 'async';
 
-var utils = require('magic-utils')
-  , log   = require('magic-log')
-  , async = require('async')
-;
+import { isNumber } from 'magic-types';
 
-module.exports = function getArchives(dir, cb) {
-  //~ log('getArchives in dir', dir);
-  utils.findSubDirectories(dir, function (err, files) {
-    async.map(files, function (filePath, mapCb) {
-      var fileArray = filePath.split('/')
-        , num       = fileArray[fileArray.length -1]
-      ;
-      if ( ! parseInt(num) ) {
-        return mapCb();
+const noop = () => {};
+
+export const getArchives =
+  (dir, cb = noop) => {
+    fsutils.findSubDirectories(dir, (err, files) => {
+      if (err) {
+        cb(err, files);
       }
-      
-      var file = { 
-          dir: filePath
-        , num: num
-      };
-      //~ log('returning file', file);
-      mapCb(null, file);
-    }, cb);
-  });
-}
+
+      async.map(files, (dir, mapCb) => {
+        const fileArray = dir.split('/');
+        const num = fileArray[fileArray.length - 1];
+
+        if (!isNumber(num)) {
+          return mapCb();
+        }
+
+        const file = {
+          dir,
+          num,
+        };
+
+        mapCb(null, file);
+      }, cb);
+    });
+  };
+
+export default getArchives;

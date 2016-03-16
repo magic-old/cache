@@ -1,56 +1,62 @@
-'use strict';
-var async = require('async')
-  , fs    = require('fs')
-  , utils = require('magic-utils')
-  , path  = require('path')
-;
+import async from 'async';
+import fs from 'fs';
+import fsutils from 'magic-fs';
+import path from 'path';
 
-function prepareGetHosts(cb) {
-  var hostPath = path.join(process.cwd(), 'hosts');
-  cb(null, hostPath);
-}
+const noop = () => {};
 
-function filterByBlogDir(hosts, cb) {
+const prepareGetHosts =
+  (cb = noop) => {
+    const hostPath = path.join(process.cwd(), 'hosts');
+    cb(null, hostPath);
+  };
 
-  async.map(hosts, function (host, mapCb) {
-    var hostArr       = host.split('/')
-      , hostName      = hostArr[hostArr.length - 1]
-      , hostDir       = path.join(host, 'views', 'blog')
-      , filteredHosts = {}
-    ;
+const filterByHost =
+  (host, mapCb = noop) => {
+    const hostArr = host.split('/');
+    const name = hostArr[hostArr.length - 1];
+    const dir = path.join(host, 'views', 'blog');
 
-    fs.exists(hostDir, function (exists) {
-      var host = null;
-      if ( exists ) {
-        host = {
-            dir : hostDir
-          , years: {}
-          , name : hostName
-        };
-        return mapCb(null, host);
-      }
-      mapCb();
-    });
-  }, function (err, hosts) {
-    var filteredHosts = [];
-    if ( err ) { return cb(err); }
-    utils.each(hosts, function (host, key) {
-      if ( host ) {
-        filteredHosts.push({
-          dir: host.dir
-        , name: host.name
+    fs.exists(dir, exists => {
+      if (exists) {
+        return mapCb(null, {
+          dir,
+          years: {},
+          name,
         });
       }
+      mapCb(`Host ${host} does not exist`);
     });
-    cb(null, filteredHosts);
-  });
-}
+  };
 
-module.exports = function getHostsWithBlog(cb) {
-  async.waterfall([
-      prepareGetHosts
-    , utils.findSubDirectories
-    , filterByBlogDir
-  ]
-  , cb);
-}
+const filterByBlogDir =
+  (hosts, cb = noop) => {
+    async.map(
+      hosts,
+      filterByHost,
+      (err, hosts) => {
+        if (err) {
+          throw err;
+        }
+
+        hosts = hosts.map(
+          ({ dir, name }) =>
+          dir && name && { dir, name }
+        );
+
+        cb(null, hosts);
+      }
+    );
+  };
+
+export const getHostsWithBlog =
+  (cb = noop) => {
+    async.waterfall([
+      prepareGetHosts,
+      fsutils.findSubDirectories,
+      filterByBlogDir,
+    ],
+    cb);
+  };
+
+export default getHostsWithBlog;
