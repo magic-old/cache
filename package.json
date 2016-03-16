@@ -1,11 +1,9 @@
 {
   "name": "magic-cache",
   "version": "0.0.1",
-  "private": true,
   "main": "index.js",
-  "scripts": {
-    "prepublish": "babel src/ --out-file index.js --source-maps"
-  },
+  "author": "Wizards & Witches <team@wiznwit.com>",
+  "license": "AGPL-3.0",
   "dependencies": {
     "async": "1.5.2",
     "magic-fs": "github:magic/fs",
